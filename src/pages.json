@@ -1,0 +1,79 @@
+{
+	"pages": [
+		{
+			"path": "pages/index/index",
+			"style": {
+				"navigationBarTitleText": "首页"
+			}
+		},
+		{
+			"path": "pages/location/index",
+			"style": {
+				"navigationBarTitleText": "选择省市",
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/nearby/index",
+			"style": {
+				"navigationBarTitleText": "附近"
+			}
+		},
+		{
+			"path": "pages/publish/index",
+			"style": {
+				"navigationBarTitleText": "发布"
+			}
+		},
+		{
+			"path": "pages/mine/index",
+			"style": {
+				"navigationBarTitleText": "我的"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationBarBackgroundColor": "#ffffff",
+		"backgroundColor": "#f5f5f5"
+	},
+	"easycom": {
+		"autoscan": true,
+		"custom": {
+			"^van-(.*)": "vant-weapp/lib/$1/index"
+		}
+	},
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#1890ff",
+		"backgroundColor": "#ffffff",
+		"borderStyle": "white",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "首页",
+				"iconPath": "static/tabbar-png/home.png",
+				"selectedIconPath": "static/tabbar-png/home-active.png"
+			},
+			{
+				"pagePath": "pages/nearby/index",
+				"text": "附近",
+				"iconPath": "static/tabbar-png/nearby.png",
+				"selectedIconPath": "static/tabbar-png/nearby-active.png"
+			},
+			{
+				"pagePath": "pages/publish/index",
+				"text": "发布",
+				"iconPath": "static/tabbar-png/publish.png",
+				"selectedIconPath": "static/tabbar-png/publish-active.png"
+			},
+			{
+				"pagePath": "pages/mine/index",
+				"text": "我的",
+				"iconPath": "static/tabbar-png/mine.png",
+				"selectedIconPath": "static/tabbar-png/mine-active.png"
+			}
+		]
+	}
+}
