@@ -1,23 +1,29 @@
 <template>
   <view class="page-container">
-    <custom-nav title="附近" />
-    <scroll-view scroll-y class="content-scroll" refresher-enabled :refresher-triggered="refreshing"
-      @refresherrefresh="onRefresh" @scrolltolower="onLoadMore">
-      <view class="nearby-list">
-        <view v-for="(item, index) in list" :key="index" class="nearby-item">
+    <custom-nav title="我的关注" />
+    <scroll-view
+      scroll-y
+      class="content-scroll"
+      refresher-enabled
+      :refresher-triggered="refreshing"
+      @refresherrefresh="onRefresh"
+      @scrolltolower="onLoadMore"
+    >
+      <view class="follow-list">
+        <view v-for="(item, index) in list" :key="index" class="follow-item">
           <view class="item-avatar">
             <image :src="item.avatar" mode="aspectFill" />
           </view>
           <view class="item-content">
             <view class="item-header">
               <text class="item-name">{{ item.name }}</text>
-              <text class="item-distance">{{ item.distance }}</text>
+              <text class="item-type">{{ item.type }}</text>
             </view>
-            <text class="item-type">{{ item.type }}</text>
             <text class="item-desc">{{ item.description }}</text>
-            <view class="item-tags">
-              <text v-for="(tag, idx) in item.tags" :key="idx" class="tag">{{ tag }}</text>
-            </view>
+            <text class="item-time">关注于 {{ item.followTime }}</text>
+          </view>
+          <view class="item-action">
+            <text class="action-btn">已关注</text>
           </view>
         </view>
       </view>
@@ -29,8 +35,9 @@
         <text>— 没有更多了 —</text>
       </view>
       <view class="empty-state" v-else-if="list.length === 0 && !loading">
-        <text class="empty-icon">📍</text>
-        <text class="empty-text">暂无附近内容</text>
+        <text class="empty-icon">❤️</text>
+        <text class="empty-text">暂无关注内容</text>
+        <text class="empty-desc">快去关注感兴趣的内容吧</text>
       </view>
     </scroll-view>
   </view>
@@ -39,10 +46,10 @@
 <script setup lang="ts">
 import CustomNav from '@/components/custom-nav/index.vue'
 import { usePagination } from '@/utils/usePagination'
-import { mockNearbyList } from '@/utils/mock'
-import type { MockNearby } from '@/utils/mock'
+import { mockFollowList } from '@/utils/mock'
+import type { MockFollow } from '@/utils/mock'
 
-const { list, loading, refreshing, hasMore, onRefresh, onLoadMore } = usePagination<MockNearby>(mockNearbyList, {
+const { list, loading, refreshing, hasMore, onRefresh, onLoadMore } = usePagination<MockFollow>(mockFollowList, {
   pageSize: 10,
   immediate: true
 })
@@ -60,14 +67,15 @@ const { list, loading, refreshing, hasMore, onRefresh, onLoadMore } = usePaginat
   padding: 24rpx;
 }
 
-.nearby-list {
+.follow-list {
   display: flex;
   flex-direction: column;
   gap: 20rpx;
 }
 
-.nearby-item {
+.follow-item {
   display: flex;
+  align-items: center;
   background-color: #ffffff;
   border-radius: 16rpx;
   padding: 24rpx;
@@ -76,7 +84,7 @@ const { list, loading, refreshing, hasMore, onRefresh, onLoadMore } = usePaginat
   .item-avatar {
     width: 120rpx;
     height: 120rpx;
-    border-radius: 12rpx;
+    border-radius: 60rpx;
     overflow: hidden;
     flex-shrink: 0;
     margin-right: 24rpx;
@@ -91,11 +99,10 @@ const { list, loading, refreshing, hasMore, onRefresh, onLoadMore } = usePaginat
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
 
     .item-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
       margin-bottom: 8rpx;
 
@@ -103,43 +110,46 @@ const { list, loading, refreshing, hasMore, onRefresh, onLoadMore } = usePaginat
         font-size: 30rpx;
         font-weight: 600;
         color: #333333;
+        margin-right: 12rpx;
       }
 
-      .item-distance {
-        font-size: 24rpx;
-        color: #999999;
+      .item-type {
+        font-size: 20rpx;
+        color: #1890ff;
+        background-color: rgba(24, 144, 255, 0.1);
+        padding: 4rpx 12rpx;
+        border-radius: 12rpx;
       }
-    }
-
-    .item-type {
-      font-size: 22rpx;
-      color: #1890ff;
-      background-color: rgba(24, 144, 255, 0.1);
-      padding: 4rpx 16rpx;
-      border-radius: 16rpx;
-      display: inline-block;
-      margin-bottom: 8rpx;
-      width: fit-content;
     }
 
     .item-desc {
       font-size: 24rpx;
       color: #666666;
-      margin-bottom: 12rpx;
+      margin-bottom: 8rpx;
       line-height: 1.4;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
     }
 
-    .item-tags {
-      display: flex;
-      gap: 12rpx;
+    .item-time {
+      font-size: 22rpx;
+      color: #999999;
+    }
+  }
 
-      .tag {
-        font-size: 20rpx;
-        color: #666666;
-        background-color: #f5f5f5;
-        padding: 6rpx 16rpx;
-        border-radius: 16rpx;
-      }
+  .item-action {
+    flex-shrink: 0;
+    margin-left: 16rpx;
+
+    .action-btn {
+      display: inline-block;
+      font-size: 24rpx;
+      color: #999999;
+      background-color: #f5f5f5;
+      padding: 12rpx 24rpx;
+      border-radius: 24rpx;
     }
   }
 }
@@ -157,14 +167,17 @@ const { list, loading, refreshing, hasMore, onRefresh, onLoadMore } = usePaginat
   align-items: center;
   justify-content: center;
   padding-top: 200rpx;
-
   .empty-icon {
     font-size: 120rpx;
     margin-bottom: 32rpx;
   }
-
   .empty-text {
-    font-size: 28rpx;
+    font-size: 32rpx;
+    color: #323233;
+    margin-bottom: 16rpx;
+  }
+  .empty-desc {
+    font-size: 26rpx;
     color: #969799;
   }
 }

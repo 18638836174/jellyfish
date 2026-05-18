@@ -1,77 +1,257 @@
 <template>
   <view class="page-container">
-    <view class="content-card">
-      <view class="card-header">
-        <view class="icon-wrapper">
-          <text class="icon-text">➕</text>
+    <view class="publish-hero">
+      <view class="hero-content">
+        <view class="hero-icon">
+          <text>🏪</text>
         </view>
-        <text class="card-title">发布</text>
+        <text class="hero-title">发布商品 · 服务</text>
+        <text class="hero-subtitle">轻松发布，让生意触手可及</text>
       </view>
-      <view class="card-content">
-        <text class="content-desc">分享你的精彩瞬间</text>
-        <van-cell-group inset>
-          <van-cell title="发布图文" icon="photo-o" is-link />
-          <van-cell title="发布视频" icon="video-o" is-link />
-          <van-cell title="发布动态" icon="edit" is-link />
-        </van-cell-group>
+    </view>
+
+    <view class="category-section">
+      <view class="section-header">
+        <text class="section-title">选择分类</text>
+      </view>
+      <view class="category-grid">
+        <view v-for="category in categories" :key="category.code" class="category-card"
+          @click="selectCategory(category)">
+          <view class="category-icon">
+            <text>{{ category.icon }}</text>
+          </view>
+          <text class="category-name">{{ category.name }}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="tips-section">
+      <view class="tips-header">
+        <text class="tips-title">💡 发布小贴士</text>
+      </view>
+      <view class="tips-list">
+        <view class="tip-item">
+          <text class="tip-bullet">•</text>
+          <text class="tip-text">详细的商品描述和实物图片能提高成交率</text>
+        </view>
+        <view class="tip-item">
+          <text class="tip-bullet">•</text>
+          <text class="tip-text">合理定价，标注新旧程度让买家更放心</text>
+        </view>
+        <view class="tip-item">
+          <text class="tip-bullet">•</text>
+          <text class="tip-text">选择正确的分类能让信息更快被发现</text>
+        </view>
       </view>
     </view>
   </view>
 </template>
 
 <script setup lang="ts">
+const categories = [
+  { code: 'fruits', name: '水果生鲜', icon: '🍎' },
+  { code: 'vegetables', name: '蔬菜粮油', icon: '🥬' },
+  { code: 'rent', name: '房屋租售', icon: '🏠' },
+  { code: 'repair', name: '上门维修', icon: '🔧' },
+  { code: 'cleaning', name: '家政保洁', icon: '🧹' },
+  { code: 'delivery', name: '搬家运输', icon: '🚚' },
+  { code: 'education', name: '教育培训', icon: '📚' },
+  { code: 'more', name: '更多分类', icon: '📋' }
+]
+
+const selectCategory = (category: any) => {
+  uni.navigateTo({
+    url: `/pages/publish/form?code=${category.code}&name=${encodeURIComponent(category.name)}`
+  })
+}
 </script>
 
 <style lang="scss">
 .page-container {
-  padding: 24rpx;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background: linear-gradient(180deg, #fff9f0 0%, #fff5e6 100%);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
-.content-card {
-  background-color: #ffffff;
-  border-radius: 16rpx;
+.publish-hero {
+  background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 50%, #f7931e 100%);
+  padding: 80rpx 40rpx;
+  margin-bottom: 30rpx;
+  position: relative;
   overflow: hidden;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 60%);
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    .hero-icon {
+      width: 120rpx;
+      height: 120rpx;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 32rpx;
+
+      text {
+        font-size: 60rpx;
+      }
+    }
+
+    .hero-title {
+      font-size: 48rpx;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 16rpx;
+      letter-spacing: 2rpx;
+    }
+
+    .hero-subtitle {
+      font-size: 28rpx;
+      color: rgba(255, 255, 255, 0.95);
+      letter-spacing: 1rpx;
+    }
+  }
 }
 
-.card-header {
-  display: flex;
-  align-items: center;
-  padding: 32rpx;
-  background: linear-gradient(135deg, #1890ff 0%, #096dd9 100%);
-  
-  .icon-wrapper {
-    width: 80rpx;
-    height: 80rpx;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 50%;
+.category-section {
+  padding: 0 30rpx;
+  margin-bottom: 30rpx;
+
+  .section-header {
+    margin-bottom: 24rpx;
+
+    .section-title {
+      font-size: 32rpx;
+      font-weight: 600;
+      color: #323233;
+    }
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20rpx;
+
+    .category-card {
+      background-color: #ffffff;
+      border-radius: 16rpx;
+      padding: 28rpx 16rpx;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-shadow: 0 2rpx 12rpx rgba(255, 107, 53, 0.08);
+      transition: transform 0.2s ease;
+
+      &:active {
+        transform: scale(0.95);
+      }
+
+      .category-icon {
+        width: 80rpx;
+        height: 80rpx;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12rpx;
+
+        text {
+          font-size: 48rpx;
+        }
+      }
+
+      .category-name {
+        font-size: 22rpx;
+        color: #646566;
+        text-align: center;
+      }
+    }
+  }
+}
+
+.quick-publish {
+  padding: 0 30rpx;
+  margin-bottom: 30rpx;
+
+  .publish-btn {
+    background: linear-gradient(135deg, #ff9a56 0%, #ff6b35 100%);
+    border-radius: 50rpx;
+    padding: 32rpx;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 24rpx;
-    
-    .icon-text {
+    box-shadow: 0 8rpx 24rpx rgba(255, 107, 53, 0.35);
+
+    .btn-icon {
       font-size: 40rpx;
+      margin-right: 16rpx;
     }
-  }
-  
-  .card-title {
-    font-size: 36rpx;
-    font-weight: 600;
-    color: #ffffff;
+
+    .btn-text {
+      font-size: 36rpx;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: 4rpx;
+    }
   }
 }
 
-.card-content {
-  padding: 24rpx 32rpx 32rpx;
-  
-  .content-desc {
-    font-size: 26rpx;
-    color: #969799;
+.tips-section {
+  margin: 0 30rpx;
+  background-color: #ffffff;
+  border-radius: 20rpx;
+  padding: 32rpx;
+  box-shadow: 0 4rpx 20rpx rgba(255, 107, 53, 0.08);
+
+  .tips-header {
     margin-bottom: 24rpx;
-    display: block;
+
+    .tips-title {
+      font-size: 30rpx;
+      font-weight: 600;
+      color: #323233;
+    }
+  }
+
+  .tips-list {
+    .tip-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16rpx;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      .tip-bullet {
+        color: #ff6b35;
+        font-size: 28rpx;
+        margin-right: 16rpx;
+        line-height: 1.5;
+      }
+
+      .tip-text {
+        flex: 1;
+        font-size: 26rpx;
+        color: #646566;
+        line-height: 1.6;
+      }
+    }
   }
 }
 </style>

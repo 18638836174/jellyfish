@@ -1,23 +1,25 @@
 <template>
-    <view class="nav-bar" :style="{ backgroundColor: backgroundColor }">
-        <view class="nav-content" :style="{ paddingTop: statusBarHeight + 'px' }">
-            <view class="nav-header" :style="{ height: capsuleHeight + 'px' }">
-                <view class="nav-left" :style="{ color: iconColor }">
-                    <view v-if="showBack" class="back-btn" @click="handleBack">
-                        <text class="back-icon">‹</text>
-                    </view>
+    <view>
+        <view class="nav-placeholder" :style="{ height: totalHeight + 'px' }"></view>
+        <view class="nav-container" :style="{ height: totalHeight + 'px', backgroundColor: backgroundColor }">
+            <view class="status-bar" :style="{ height: statusBarHeight + 'px' }"></view>
+            <view class="nav-bar" :style="{ height: navBarHeight + 'px' }">
+                <view class="back-btn"
+                    :style="{ color: iconColor, height: navBarHeight + 'px', lineHeight: navBarHeight + 'px' }"
+                    @click="handleBack">
+                    <text class="back-icon">‹</text>
                 </view>
-                <view class="nav-title">
-                    <text class="title-text" :style="{ color: titleColor }">{{ title }}</text>
+                <view class="nav-title"
+                    :style="{ color: titleColor, height: navBarHeight + 'px', lineHeight: navBarHeight + 'px' }">
+                    {{ title }}
                 </view>
-                <view class="nav-right"></view>
             </view>
         </view>
     </view>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 interface Props {
     title?: string
@@ -37,8 +39,10 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits(['back'])
 
-const statusBarHeight = ref(0)
-const capsuleHeight = ref(32)
+const statusBarHeight = ref(20)
+const navBarHeight = ref(44)
+
+const totalHeight = computed(() => statusBarHeight.value + navBarHeight.value)
 
 onMounted(() => {
     const systemInfo = uni.getSystemInfoSync()
@@ -46,86 +50,68 @@ onMounted(() => {
 
     const menuButtonBoundingClient = uni.getMenuButtonBoundingClientRect()
     if (menuButtonBoundingClient) {
-        const navHeight = menuButtonBoundingClient.top - statusBarHeight.value
-        const capsuleHeightValue = menuButtonBoundingClient.height
-        capsuleHeight.value = capsuleHeightValue
+        navBarHeight.value = menuButtonBoundingClient.bottom - statusBarHeight.value + 10
     }
 })
 
 const handleBack = () => {
-    emit('back')
     uni.navigateBack({
-        delta: 1,
         fail: () => {
-            uni.switchTab({
-                url: '/pages/index/index'
-            })
+            uni.switchTab({ url: '/pages/index/index' })
         }
     })
 }
 </script>
 
 <style lang="scss">
-.nav-bar {
-    position: sticky;
+.nav-placeholder {
+    width: 100%;
+}
+
+.nav-container {
+    position: fixed;
     top: 0;
+    left: 0;
+    right: 0;
     z-index: 999;
     width: 100%;
 }
 
-.nav-content {
+.status-bar {
+    width: 100%;
+}
+
+.nav-bar {
     position: relative;
-}
-
-.nav-header {
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 16rpx;
-    box-sizing: border-box;
-}
-
-.nav-left {
-    width: 120rpx;
-    display: flex;
-    align-items: center;
+    justify-content: center;
 }
 
 .back-btn {
+    position: absolute;
+    left: 0;
+    width: 120rpx;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
-    padding: 8rpx;
+    justify-content: center;
+    z-index: 1;
 
     .back-icon {
         font-size: 48rpx;
         font-weight: bold;
-        line-height: 1;
     }
 }
 
 .nav-title {
     flex: 1;
     text-align: center;
-    position: absolute;
-    left: 0;
-    right: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    pointer-events: none;
-}
-
-.title-text {
     font-size: 32rpx;
     font-weight: 500;
-    max-width: 400rpx;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-}
-
-.nav-right {
-    width: 120rpx;
+    padding: 0 120rpx;
 }
 </style>

@@ -30,6 +30,78 @@
 			"style": {
 				"navigationBarTitleText": "我的"
 			}
+		},
+		{
+			"path": "pages/settings/index",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/publish/form",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/mine/publish",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/mine/collect",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/mine/history",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/mine/follow",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/mine/space",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/mine/space/edit",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/mine/feedback",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/settings/privacy",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/settings/agreement",
+			"style": {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path": "pages/settings/about",
+			"style": {
+				"navigationStyle": "custom"
+			}
 		}
 	],
 	"globalStyle": {
@@ -46,7 +118,7 @@
 	},
 	"tabBar": {
 		"color": "#999999",
-		"selectedColor": "#1890ff",
+		"selectedColor": "#ff6b35",
 		"backgroundColor": "#ffffff",
 		"borderStyle": "white",
 		"list": [
@@ -55,12 +127,6 @@
 				"text": "首页",
 				"iconPath": "static/tabbar-png/home.png",
 				"selectedIconPath": "static/tabbar-png/home-active.png"
-			},
-			{
-				"pagePath": "pages/nearby/index",
-				"text": "附近",
-				"iconPath": "static/tabbar-png/nearby.png",
-				"selectedIconPath": "static/tabbar-png/nearby-active.png"
 			},
 			{
 				"pagePath": "pages/publish/index",

@@ -24,9 +24,10 @@
             </scroll-view>
         </view>
 
-        <scroll-view scroll-y class="content-scroll" @scrolltolower="loadMore">
+        <scroll-view scroll-y class="content-scroll" refresher-enabled :refresher-triggered="refreshing"
+            @refresherrefresh="onRefresh" @scrolltolower="onLoadMore">
             <view class="goods-list">
-                <view v-for="(item, index) in goodsList" :key="index" class="goods-item" @click="goToDetail(item)">
+                <view v-for="(item, index) in list" :key="index" class="goods-item" @click="goToDetail(item)">
                     <view class="goods-image">
                         <image :src="item.image" mode="aspectFill" />
                         <view class="goods-tag" v-if="item.isNew">全新</view>
@@ -45,11 +46,15 @@
                 </view>
             </view>
 
-            <view class="load-more" v-if="hasMore">
+            <view class="load-more" v-if="loading">
                 <text>加载中...</text>
             </view>
-            <view class="load-more" v-else>
+            <view class="load-more" v-else-if="!hasMore && list.length > 0">
                 <text>— 没有更多了 —</text>
+            </view>
+            <view class="empty-state" v-else-if="list.length === 0 && !loading">
+                <text class="empty-icon">📦</text>
+                <text class="empty-text">暂无商品</text>
             </view>
         </scroll-view>
     </view>
@@ -58,6 +63,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRegionStore } from '@/store'
+import { usePagination } from '@/utils/usePagination'
+import { mockGoodsList } from '@/utils/mock'
+import type { MockGoods } from '@/utils/mock'
 
 const regionStore = useRegionStore()
 
@@ -75,70 +83,10 @@ const categories = [
     { name: '宠物' },
 ]
 
-const goodsList = ref([
-    {
-        id: 1,
-        image: 'https://img.yzcdn.cn/vant/apple-1.jpg',
-        title: '新鲜红富士苹果 5斤装 当季水果 脆甜多汁',
-        price: '29.9',
-        originalPrice: '45',
-        shopName: '老王水果店',
-        location: '天河区',
-        isNew: true
-    },
-    {
-        id: 2,
-        image: 'https://img.yzcdn.cn/vant/apple-2.jpg',
-        title: '有机青菜 新鲜采摘 当日送达',
-        price: '12.8',
-        originalPrice: '',
-        shopName: '绿色菜园',
-        location: '白云区',
-        isNew: false
-    },
-    {
-        id: 3,
-        image: 'https://img.yzcdn.cn/vant/cat.jpeg',
-        title: '精装单间出租 家电齐全 近地铁',
-        price: '1800',
-        originalPrice: '2200',
-        shopName: '房东直租',
-        location: '番禺区',
-        isNew: true
-    },
-    {
-        id: 4,
-        image: 'https://img.yzcdn.cn/vant/dog.jpeg',
-        title: '家电维修 快速上门 质保3个月',
-        price: '50',
-        originalPrice: '',
-        shopName: '老李维修',
-        location: '全市上门',
-        isNew: false
-    },
-    {
-        id: 5,
-        image: 'https://img.yzcdn.cn/vant/apple-1.jpg',
-        title: '正宗赣南脐橙 10斤装 甜度高',
-        price: '39.9',
-        originalPrice: '59',
-        shopName: '果园直发',
-        location: '增城区',
-        isNew: true
-    },
-    {
-        id: 6,
-        image: 'https://img.yzcdn.cn/vant/apple-2.jpg',
-        title: '白菜萝卜套餐 新鲜蔬菜',
-        price: '15.9',
-        originalPrice: '',
-        shopName: '农场直供',
-        location: '花都区',
-        isNew: false
-    },
-])
-
-const hasMore = ref(false)
+const { list, loading, refreshing, hasMore, onRefresh, onLoadMore } = usePagination<MockGoods>(mockGoodsList, {
+    pageSize: 10,
+    immediate: true
+})
 
 const selectCategory = (index: number) => {
     currentCategory.value = index
@@ -146,12 +94,6 @@ const selectCategory = (index: number) => {
 
 const goToDetail = (item: any) => {
     uni.showToast({ title: '点击查看详情', icon: 'none' })
-}
-
-const loadMore = () => {
-    if (hasMore.value) {
-        uni.showToast({ title: '加载中...', icon: 'none' })
-    }
 }
 
 const goToLocation = () => {
@@ -375,5 +317,23 @@ page {
     padding: 40rpx;
     color: #c0c0c0;
     font-size: 24rpx;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 200rpx;
+
+    .empty-icon {
+        font-size: 120rpx;
+        margin-bottom: 32rpx;
+    }
+
+    .empty-text {
+        font-size: 28rpx;
+        color: #969799;
+    }
 }
 </style>

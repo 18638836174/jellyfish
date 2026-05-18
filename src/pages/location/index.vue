@@ -2,46 +2,43 @@
   <view class="container">
     <custom-nav title="选择省市" @back="goBack" />
 
-    <scroll-view class="content" scroll-y :scroll-into-view="scrollIntoView">
-      <view class="current-location" v-if="!searchKeyword">
-        <text class="section-title">当前定位</text>
-        <view class="current-city" @click="selectRegion(regionStore.selectedRegion)">
-          <text class="city-name">{{ regionStore.selectedRegion.name }}</text>
-          <text class="city-code">{{ regionStore.selectedRegion.code }}</text>
+    <view class="current-location" v-if="!searchKeyword">
+      <text class="section-title">当前定位</text>
+      <view class="current-city" @click="selectRegion(regionStore.selectedRegion)">
+        <text class="city-name">{{ regionStore.selectedRegion.name }}</text>
+        <!-- <text class="city-code">{{ regionStore.selectedRegion.code }}</text> -->
+      </view>
+    </view>
+
+    <view class="hot-cities" v-if="!searchKeyword" id="letter-re">
+      <text class="section-title">热门省市</text>
+      <view class="hot-list">
+        <view v-for="(city, index) in hotCities" :key="index" class="hot-item" @click="selectRegion(city)">
+          {{ city.name }}
         </view>
       </view>
+    </view>
 
-      <view class="hot-cities" v-if="!searchKeyword" id="letter-热">
-        <text class="section-title">热门省市</text>
-        <view class="hot-list">
-          <view v-for="(city, index) in hotCities" :key="index" class="hot-item" @click="selectRegion(city)">
-            {{ city.name }}
+    <view class="search-result" v-if="searchKeyword">
+      <view v-for="(region, index) in searchResult" :key="index" class="result-item" @click="selectRegion(region)">
+        <text class="result-name">{{ region.name }}</text>
+        <text class="result-pinyin">{{ region.pinyin }}</text>
+      </view>
+      <view class="no-result" v-if="searchResult.length === 0">
+        <text>未找到匹配结果</text>
+      </view>
+    </view>
+
+    <view v-if="!searchKeyword">
+      <view v-for="(group, gIndex) in regionGroups" :key="gIndex">
+        <view class="letter-title" :id="'letter-' + group.letter">{{ group.letter }}</view>
+        <view class="letter-list">
+          <view v-for="(region, rIndex) in group.list" :key="rIndex" class="letter-item" @click="selectRegion(region)">
+            {{ region.name }}
           </view>
         </view>
       </view>
-
-      <view class="search-result" v-if="searchKeyword">
-        <view v-for="(region, index) in searchResult" :key="index" class="result-item" @click="selectRegion(region)">
-          <text class="result-name">{{ region.name }}</text>
-          <text class="result-pinyin">{{ region.pinyin }}</text>
-        </view>
-        <view class="no-result" v-if="searchResult.length === 0">
-          <text>未找到匹配结果</text>
-        </view>
-      </view>
-
-      <view v-if="!searchKeyword">
-        <view v-for="(group, gIndex) in regionGroups" :key="gIndex">
-          <view class="letter-title" :id="'letter-' + group.letter">{{ group.letter }}</view>
-          <view class="letter-list">
-            <view v-for="(region, rIndex) in group.list" :key="rIndex" class="letter-item"
-              @click="selectRegion(region)">
-              {{ region.name }}
-            </view>
-          </view>
-        </view>
-      </view>
-    </scroll-view>
+    </view>
 
     <view class="letter-nav" v-if="!searchKeyword">
       <view v-for="letter in availableLetters" :key="letter" class="letter-btn" @click="scrollToLetter(letter)">
@@ -52,8 +49,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRegionStore, type Region } from '@/store'
+import CustomNav from '@/components/custom-nav/index.vue'
 import {
   hotCities,
   getRegionGroups,
@@ -66,7 +64,7 @@ const regionStore = useRegionStore()
 const searchKeyword = ref('')
 const regionGroups = ref<any[]>([])
 const letters = ref<string[]>([])
-const scrollIntoView = ref('')
+const scrollTop = ref(0)
 
 const searchResult = computed(() => {
   const allRegions = [
@@ -79,6 +77,11 @@ const searchResult = computed(() => {
 const availableLetters = computed(() => {
   return ['热', ...regionGroups.value.map((g: any) => g.letter)]
 })
+
+const letterToId = (letter: string) => {
+  if (letter === '热') return 'letter-re'
+  return 'letter-' + letter
+}
 
 onMounted(() => {
   regionGroups.value = getRegionGroups()
@@ -96,15 +99,20 @@ const selectRegion = (region: Region) => {
   }, 500)
 }
 
-const goBack = () => {
-  uni.navigateBack()
-}
 
 const scrollToLetter = (letter: string) => {
-  scrollIntoView.value = 'letter-' + letter
-  setTimeout(() => {
-    scrollIntoView.value = ''
-  }, 100)
+  const targetId = letterToId(letter)
+  uni.createSelectorQuery()
+    .select('#' + targetId)
+    .boundingClientRect((rect: any) => {
+      if (rect) {
+        uni.pageScrollTo({
+          scrollTop: rect.top - 80,
+          duration: 300
+        })
+      }
+    })
+    .exec()
 }
 </script>
 
@@ -116,10 +124,6 @@ page {
 .container {
   min-height: 100vh;
   background-color: #f5f5f5;
-}
-
-.content {
-  height: calc(100vh - 120rpx);
   padding-bottom: 60rpx;
 }
 
@@ -136,8 +140,9 @@ page {
   .current-city {
     background-color: #ffffff;
     border-radius: 16rpx;
-    padding: 28rpx;
-    display: flex;
+    padding: 0 28rpx;
+
+    display: inline-block;
     justify-content: space-between;
     align-items: center;
 
@@ -145,6 +150,7 @@ page {
       font-size: 32rpx;
       color: #333;
       font-weight: 500;
+      line-height: 80rpx;
     }
 
     .city-code {
@@ -240,11 +246,11 @@ page {
 .letter-nav {
   position: fixed;
   right: 8rpx;
-  top: 200rpx;
+  top: 250rpx;
   z-index: 100;
 
   .letter-btn {
-    font-size: 20rpx;
+    font-size: 24rpx;
     color: #1890ff;
     padding: 6rpx 4rpx;
     text-align: center;
