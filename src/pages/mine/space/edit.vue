@@ -1,8 +1,9 @@
 <template>
   <view class="page-container">
     <view class="custom-nav">
-      <view class="nav-left" @click="goBack">
-        <text class="nav-arrow">‹</text>
+      <view class="nav-left">
+        <text class="nav-back-icon" @click="goBack">‹</text>
+        <text class="nav-back-text" @click="goBack">返回</text>
       </view>
       <text class="nav-title">编辑空间</text>
       <view class="nav-right"></view>
@@ -379,6 +380,20 @@ page {
     color: #ffffff;
     font-weight: 300;
     line-height: 1;
+  }
+
+  .nav-back-icon {
+    font-size: 64rpx;
+    color: #ffffff;
+    font-weight: 300;
+    line-height: 1;
+    margin-right: 8rpx;
+  }
+
+  .nav-back-text {
+    font-size: 28rpx;
+    color: #ffffff;
+    font-weight: 500;
   }
 
   .nav-title {
