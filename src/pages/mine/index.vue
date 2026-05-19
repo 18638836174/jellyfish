@@ -35,12 +35,6 @@
         </view>
         <text class="action-label">我的关注</text>
       </view>
-      <view class="action-item" @click="goToSpace">
-        <view class="action-icon">
-          <text class="icon-text">🏠</text>
-        </view>
-        <text class="action-label">我的空间</text>
-      </view>
     </view>
 
     <view class="menu-list">
@@ -86,10 +80,6 @@ const goToHistory = () => {
 
 const goToFollow = () => {
   uni.navigateTo({ url: '/pages/mine/follow' })
-}
-
-const goToSpace = () => {
-  uni.navigateTo({ url: '/pages/mine/space' })
 }
 
 const goToFeedback = () => {
